@@ -1,9 +1,15 @@
 name: Playwright CI
-on: [push]
+
+on:
+  push:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -13,17 +19,17 @@ jobs:
 
       - name: Run Tests in Container
         run: |
-          # We add -t to see the live console output in GitHub Actions
+          # Add -t to see live console output in GitHub Actions
           docker run --name qa-runner playwright-qa
-        
+
       - name: Extract Report
         if: always()
         run: |
-          # This pulls the file even if the previous step failed
-          docker cp qa-runner:/app/report.html . || echo "Report not found".
+          # Pull report even if tests fail
+          docker cp qa-runner:/app/report.html . || echo "Report not found"
 
       - name: Upload Test Report
-        if: always() # Ensure report uploads even if tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: qa-test-report
