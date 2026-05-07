@@ -1,0 +1,26 @@
+name: Playwright CI
+on: [push]
+
+jobs:
+  playwright-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t playwright-qa .
+
+      - name: Run Tests in Container
+        run: |
+          # We run the container and map the current directory to see the report
+          docker run --name qa-runner playwright-qa
+          # Copy the report out of the container so GitHub can see it
+          docker cp qa-runner:/app/report.html .
+
+      - name: Upload Test Report
+        if: always() # Ensure report uploads even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-report
+          path: report.html
