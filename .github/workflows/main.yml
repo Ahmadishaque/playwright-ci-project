@@ -13,10 +13,14 @@ jobs:
 
       - name: Run Tests in Container
         run: |
-          # We run the container and map the current directory to see the report
+          # We add -t to see the live console output in GitHub Actions
           docker run --name qa-runner playwright-qa
-          # Copy the report out of the container so GitHub can see it
-          docker cp qa-runner:/app/report.html .
+        
+      - name: Extract Report
+        if: always()
+        run: |
+          # This pulls the file even if the previous step failed
+          docker cp qa-runner:/app/report.html . || echo "Report not found".
 
       - name: Upload Test Report
         if: always() # Ensure report uploads even if tests fail
