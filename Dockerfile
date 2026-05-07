@@ -10,4 +10,4 @@ RUN playwright install chromium --with-deps
 COPY . .
 
 # Updated CMD: Removed --headless and used standard pytest flags
-CMD ["pytest", "tests/test_site.py", "--browser", "chromium", "--html=report.html", "--self-contained-html"]
+CMD ["pytest", "tests/test_site.py", "--browser", "chromium", "--html=report.html", "--self-contained-html", "--tracing", "retain-on-failure"]
