@@ -22,15 +22,18 @@ jobs:
           # Add -t to see live console output in GitHub Actions
           docker run --name qa-runner playwright-qa
 
-      - name: Extract Report
+      - name: Extract Report and Traces
         if: always()
         run: |
-          # Pull report even if tests fail
           docker cp qa-runner:/app/report.html . || echo "Report not found"
+          docker cp qa-runner:/app/test-results . || echo "Traces not found"
 
-      - name: Upload Test Report
+      - name: Upload Test Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: qa-test-report
-          path: report.html
+          name: qa-test-results
+          # This will upload both the HTML report and the trace folder
+          path: |
+            report.html
+            test-results/
